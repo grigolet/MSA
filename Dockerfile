@@ -7,6 +7,7 @@ WORKDIR /app
 # Install system dependencies including ImageMagick and minimal OpenCV requirements
 RUN apt-get update && apt-get install -y \
     imagemagick \
+    curl \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
@@ -37,7 +38,8 @@ COPY . .
 EXPOSE 8501
 
 # Health check
-HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl --fail http://localhost:8501/_stcore/health || exit 1
 
 # Run streamlit app
 CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true", "--server.fileWatcherType=none"]
