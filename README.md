@@ -1,173 +1,118 @@
-# Metal Slug Awakening - OCR Player Power Analysis
+# Metal Slug Awakening - OCR Text Cleaning
 
-A Streamlit web application that processes screenshots from the Metal Slug Awakening mobile game to extract player names and power levels using OCR (Optical Character Recognition).
+A Streamlit web application that processes screenshots from the Metal Slug Awakening game to extract player names and power levels from the members club.
 
 ## Features
 
-- **Image Upload**: Upload up to 16 screenshots from the game
-- **Automatic Cropping**: Crops images to focus on the relevant player data area
-- **OCR Processing**: Extracts text using EasyOCR with English language support
-- **Data Cleaning**: Automatically cleans and parses player names and power levels
-- **Interactive Table**: Displays results in a sortable, searchable table
-- **Malformed Detection**: Flags potentially malformed entries for manual review
-- **Export Options**: Download results as CSV or copy-paste ready format
+- **Multi-image Upload**: Accept up to 16 screenshots at once
+- **Automatic Cropping**: Uses ImageMagick to extract the relevant portions of screenshots
+- **OCR Processing**: Extracts text using EasyOCR with specialized cleaning algorithms
+- **Data Validation**: Identifies potentially malformed entries
+- **Export Options**: Download results as CSV or copy-paste format
+- **Docker Support**: Easy deployment with Docker
 
 ## Requirements
 
-### System Dependencies
 - Python 3.11+
 - ImageMagick (for image cropping)
+- Dependencies listed in `requirements.txt`
 
-### Python Dependencies
-See `requirements.txt` for the complete list. Main dependencies include:
-- streamlit
-- pandas
-- easyocr
-- opencv-python
-- Pillow
+## Quick Start
 
-## Installation & Setup
+### Local Development
 
-### Option 1: Local Installation
-
-1. **Clone the repository**:
-   ```bash
-   git clone <repository-url>
-   cd MSA
-   ```
-
-2. **Install system dependencies**:
-   
-   **Ubuntu/Debian**:
-   ```bash
-   sudo apt-get update
-   sudo apt-get install imagemagick
-   ```
-   
-   **macOS** (using Homebrew):
-   ```bash
-   brew install imagemagick
-   ```
-   
-   **Windows**:
-   Download and install ImageMagick from: https://imagemagick.org/script/download.php#windows
-
-3. **Install Python dependencies**:
+1. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **Run the application**:
+2. **Install ImageMagick:**
+   - Ubuntu/Debian: `sudo apt-get install imagemagick`
+   - macOS: `brew install imagemagick`
+   - Windows: Download from [ImageMagick website](https://imagemagick.org/script/download.php)
+
+3. **Run the application:**
    ```bash
    streamlit run app.py
    ```
 
-5. **Access the application**:
-   Open your browser and go to `http://localhost:8501`
+4. **Open your browser** and navigate to `http://localhost:8501`
 
-### Option 2: Docker Deployment
+### Docker Deployment
 
-1. **Build the Docker image**:
+1. **Build the Docker image:**
    ```bash
    docker build -t msa-ocr .
    ```
 
-2. **Run the container**:
+2. **Run the container:**
    ```bash
    docker run -p 8501:8501 msa-ocr
    ```
 
-3. **Access the application**:
-   Open your browser and go to `http://localhost:8501`
+3. **Access the application** at `http://localhost:8501`
 
 ## Usage
 
-1. **Take Screenshots**: Capture screenshots from Metal Slug Awakening showing the member list with player names and power levels.
+1. **Upload Screenshots**: Drag and drop or select up to 16 images from your Metal Slug Awakening members club
+2. **Preview Images**: Optionally view the uploaded images before processing
+3. **Process**: Click "Process Images" to start the OCR pipeline
+4. **Review Results**: View the extracted player data in a sorted table
+5. **Export**: Download as CSV or copy the text format for spreadsheets
 
-2. **Upload Images**: Use the file uploader to select up to 16 screenshots (JPG, JPEG, or PNG format).
+## How It Works
 
-3. **Process Images**: Click the "Process Images" button to:
-   - Automatically crop images to focus on the player data area
-   - Run OCR to extract text
-   - Clean and parse player names and power levels
-   - Detect potentially malformed entries
-
-4. **Review Results**: 
-   - View the processed data in an interactive table
-   - Check for any flagged malformed entries
-   - Review summary statistics
-
-5. **Export Data**:
-   - Download results as a CSV file
-   - Copy data in a ready-to-paste format
+1. **Image Cropping**: Uploaded images are cropped to extract the members list area (417x380 pixels starting at position 447,170)
+2. **OCR Processing**: EasyOCR extracts text from the cropped images
+3. **Text Cleaning**: Custom algorithms in `cleantext.py` parse player names and power levels
+4. **Data Validation**: Identifies suspicious entries based on power thresholds and text patterns
+5. **Deduplication**: Combines results from multiple images, keeping the highest power for each player
 
 ## Project Structure
 
 ```
-MSA/
-├── app.py                 # Main Streamlit application
-├── cleantext.py          # OCR text cleaning and parsing logic
-├── ocr.py               # Alternative OCR implementation (PaddleOCR)
-├── crop.sh              # Shell script for batch image cropping
-├── requirements.txt      # Python dependencies
-├── Dockerfile           # Docker configuration
-├── README.md            # This file
-└── screenshots/         # Sample screenshots and processed data
-    ├── cropped/         # Cropped images output
-    └── *.jpg            # Original screenshots
+├── app.py              # Main Streamlit application
+├── cleantext.py        # OCR text processing and cleaning logic
+├── ocr.py             # Alternative OCR processing (legacy)
+├── crop.sh            # Shell script for image cropping
+├── requirements.txt    # Python dependencies
+├── Dockerfile         # Docker configuration
+├── screenshots/       # Sample images and cropped outputs
+└── README.md          # This file
 ```
 
 ## Configuration
 
-The OCR processing behavior can be configured by modifying variables in `cleantext.py`:
+You can adjust the OCR processing behavior by modifying constants in `cleantext.py`:
 
-- `MIN_DIGITS`: Minimum number of digits required for a valid power value (default: 6)
-- `STRICT_MIN_POWER`: Minimum power threshold; entries below this are flagged as suspects (default: 3,000,000)
-- `DROP_TOKENS`: Set of tokens to ignore during name parsing (roles, common terms, etc.)
+- `MIN_DIGITS`: Minimum digits required for a valid power level (default: 6)
+- `STRICT_MIN_POWER`: Minimum power threshold (default: 3,000,000)
+- `DROP_TOKENS`: Words to ignore during name extraction
 
 ## Troubleshooting
 
-### Common Issues
+### ImageMagick Issues
+- Ensure ImageMagick is installed and accessible via the `magick` command
+- On some systems, you may need to use `convert` instead of `magick`
 
-1. **ImageMagick not found**:
-   - Ensure ImageMagick is installed and the `magick` command is available in your PATH
-   - On some systems, the command might be `convert` instead of `magick`
+### OCR Accuracy
+- Ensure screenshots are clear and well-lit
+- The cropping coordinates are optimized for specific screen resolutions
+- Adjust `MIN_CONF` in the OCR settings if needed
 
-2. **OCR accuracy issues**:
-   - Ensure screenshots are clear and well-lit
-   - The cropping parameters are tuned for specific screenshot dimensions
-   - You may need to adjust cropping parameters in the `crop_images()` function
+### Memory Issues
+- EasyOCR requires significant RAM, especially on first run
+- Consider using Docker with adequate memory allocation
+- GPU acceleration can be enabled by setting `gpu=True` in the OCR reader
 
-3. **Memory issues with large images**:
-   - Reduce image sizes before uploading
-   - Process fewer images at once
-
-4. **Docker build issues**:
-   - Ensure you have sufficient disk space
-   - Check that Docker has enough memory allocated
-
-### Performance Tips
-
-- Use high-quality, well-lit screenshots for better OCR accuracy
-- Crop images manually before uploading if the automatic cropping doesn't work well
-- Process images in smaller batches if you encounter memory issues
-
-## Development
-
-To contribute to this project:
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Test the application thoroughly
+4. Test thoroughly
 5. Submit a pull request
 
 ## License
 
-This project is provided as-is for educational and personal use. Please respect the terms of service of Metal Slug Awakening when using this tool.
-
-## Acknowledgments
-
-- Uses EasyOCR for text recognition
-- Built with Streamlit for the web interface
-- ImageMagick for image processing
+This project is provided as-is for educational and personal use.

@@ -16,21 +16,24 @@ parts/
 sdist/
 var/
 wheels/
+pip-wheel-metadata/
+share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
-# Virtual Environment
-venv/
+# Virtual environments
+.env
+.venv
 env/
+venv/
 ENV/
+env.bak/
+venv.bak/
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+# Streamlit
+.streamlit/
 
 # OS
 .DS_Store
@@ -44,22 +47,18 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+temp/
+tmp/
+
+# OCR outputs
+*.csv
+stitched.png
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
 
 # Logs
 *.log
-
-# Streamlit
-.streamlit/
-
-# Images (keeping only sample ones)
-uploads/
-temp/
-*.jpg
-*.jpeg
-*.png
-!screenshots/*.jpg
-!screenshots/*.png
-
-# Data files
-*.csv
-!screenshots/players_power.csv
