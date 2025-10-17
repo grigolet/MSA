@@ -4,8 +4,25 @@ import tempfile
 import subprocess
 from pathlib import Path
 from PIL import Image
-import easyocr
+import warnings
 from cleantext import parse_ocr_lines
+
+# Suppress NumPy warnings for compatibility
+warnings.filterwarnings('ignore', category=UserWarning, module='.*numpy.*')
+
+def get_easyocr_reader():
+    """Get EasyOCR reader with error handling for NumPy compatibility"""
+    try:
+        import easyocr
+        # Try to create reader with error handling
+        reader = easyocr.Reader(['en'], gpu=False, verbose=False)
+        return reader, None
+    except Exception as e:
+        error_msg = str(e)
+        if "NumPy" in error_msg:
+            return None, "NumPy compatibility issue detected. Please downgrade NumPy: pip install 'numpy<2.0'"
+        else:
+            return None, f"Error initializing OCR: {error_msg}"
 
 def main():
     st.title("Metal Slug Awakening - OCR Text Cleaning")
@@ -32,7 +49,7 @@ def main():
             for i, uploaded_file in enumerate(uploaded_files):
                 with cols[i % 4]:
                     image = Image.open(uploaded_file)
-                    st.image(image, caption=uploaded_file.name, use_column_width=True)
+                    st.image(image, caption=uploaded_file.name, use_container_width=True)
         
         if st.button("Process Images", type="primary"):
             process_images(uploaded_files)
@@ -89,10 +106,13 @@ def process_images(uploaded_files):
         status_text.text("Initializing OCR...")
         progress_bar.progress(50)
         
-        try:
-            reader = easyocr.Reader(['en'], gpu=False)
-        except Exception as e:
-            st.error(f"Error initializing OCR: {e}")
+        reader, error_msg = get_easyocr_reader()
+        if reader is None:
+            st.error(error_msg)
+            if "NumPy" in error_msg:
+                st.info("💡 **Quick Fix**: Try running this command to fix the NumPy compatibility issue:")
+                st.code("pip install 'numpy<2.0'", language="bash")
+                st.info("Then restart the application.")
             return
         
         # Step 5: Process each cropped image

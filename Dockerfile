@@ -24,7 +24,8 @@ RUN sed -i 's/^.*policy.*coder.*none.*LABEL.*//' /etc/ImageMagick-6/policy.xml |
 COPY requirements.txt .
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir 'numpy<2.0' && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .
