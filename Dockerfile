@@ -4,7 +4,7 @@ FROM python:3.11-slim
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies including ImageMagick
+# Install system dependencies including ImageMagick and minimal OpenCV requirements
 RUN apt-get update && apt-get install -y \
     imagemagick \
     libglib2.0-0 \
@@ -13,7 +13,10 @@ RUN apt-get update && apt-get install -y \
     libxrender-dev \
     libgomp1 \
     libglib2.0-0 \
-    libgtk-3-0 \
+    libfontconfig1 \
+    libfreetype6 \
+    libpng16-16 \
+    libjpeg62-turbo \
     && rm -rf /var/lib/apt/lists/*
 
 # Configure ImageMagick policy to allow PDF/image operations
