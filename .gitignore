@@ -44,6 +44,19 @@ venv.bak/
 ehthumbs.db
 Thumbs.db
 
+# Sensitive data and game screenshots
+screenshots/
+*.jpg
+*.jpeg
+*.png
+*.csv
+*.lock*
+
+# Configuration and instruction files
+copilot_instructions.md
+instructions.md
+files_to_remove.txt
+
 # Temporary files
 *.tmp
 *.temp
@@ -51,8 +64,9 @@ temp/
 tmp/
 
 # OCR outputs
-*.csv
 stitched.png
+players_*.csv
+*_clean.csv
 
 # IDE
 .vscode/
@@ -62,3 +76,8 @@ stitched.png
 
 # Logs
 *.log
+
+# Sample data (keep structure but not actual data)
+sample_data/
+test_images/
+example_screenshots/

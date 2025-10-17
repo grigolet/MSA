@@ -77,9 +77,11 @@ A Streamlit web application that processes screenshots from the Metal Slug Awake
 ├── crop.sh            # Shell script for image cropping
 ├── requirements.txt    # Python dependencies
 ├── Dockerfile         # Docker configuration
-├── screenshots/       # Sample images and cropped outputs
+├── .gitignore         # Git ignore rules for sensitive data
 └── README.md          # This file
 ```
+
+**Note**: This repository does not contain sample screenshots or sensitive game data. Users should provide their own screenshots from Metal Slug Awakening for processing.
 
 ## Configuration
 
@@ -105,6 +107,14 @@ You can adjust the OCR processing behavior by modifying constants in `cleantext.
 - Consider using Docker with adequate memory allocation
 - GPU acceleration can be enabled by setting `gpu=True` in the OCR reader
 
+## Security & Privacy
+
+This application:
+- **Processes images locally** - uploaded screenshots are processed in temporary directories and automatically cleaned up
+- **No data retention** - images and extracted data are not stored permanently by the application
+- **No network transmission** - all OCR processing happens on your local machine or Docker container
+- **Clean repository** - this repository contains no game screenshots or sensitive player data
+
 ## Contributing
 
 1. Fork the repository
@@ -112,6 +122,8 @@ You can adjust the OCR processing behavior by modifying constants in `cleantext.
 3. Make your changes
 4. Test thoroughly
 5. Submit a pull request
+
+**Important**: Do not commit actual game screenshots or player data to the repository. The `.gitignore` file is configured to prevent this, but please be mindful when contributing.
 
 ## License
 
